@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#21043b" />
+  <title>Eclipse's Astral Quest Log</title>
+  <style>
+    :root {
+      --text: #fff;
+      --accent-color: #af7af0;
+      --glass-bg: rgba(33, 4, 59, .85);
+      --1: linear-gradient(rgb(83,64,152), rgb(140,62,138));
+      --2: linear-gradient(rgb(175,122,240), rgb(35,38,135));
+      --main-border: 1px solid #000;
+      --main-radius: 10px;
+      --box-shadow: 1px 1px 5px #000;
+      --gold: #f5d6b8;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; }
+    body { margin: 0; min-height: 100vh; color: var(--text); font: 15px/1.5 system-ui, -apple-system, sans-serif;
+      background: linear-gradient(rgba(12,5,27,.45),rgba(12,5,27,.78)),url('https://i.postimg.cc/t4XqM4ZT/IMG_6070.webp') center/cover fixed #120b20; }
+    .shell { width: min(570px, calc(100% - 28px)); margin: 28px auto 42px; }
+    .panel { background: var(--glass-bg); border: var(--main-border); border-radius: var(--main-radius); box-shadow: var(--box-shadow); padding: 16px; margin-bottom: 13px; backdrop-filter: blur(6px); }
+    header { background: var(--1); text-align: center; padding: 23px 15px; }
+    .eyebrow { color: var(--gold); letter-spacing: .12em; font-size: 11px; }
+    h1 { font-size: clamp(24px,6vw,34px); color: var(--gold); margin: 5px 0; line-height: 1.18; }
+    h2 { font-size: 18px; color: var(--gold); margin: 0 0 12px; text-align: center; border-bottom: var(--main-border); padding-bottom: 9px; }
+    header p, .hint { margin: 4px 0 0; opacity: .92; font-size: 13px; }
+    .status { font-size: 13px; display: flex; gap: 8px; align-items: center; justify-content: center; text-align: center; min-height: 22px; }
+    .status-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #e2b96d; }
+    .status-dot.online { background: #90e8bb; }
+    .status-dot.error { background: #f18ea1; }
+    .notice { font-size: 13px; padding: 10px 12px; border-radius: 7px; background: rgba(0,0,0,.33); margin: 10px 0 0; }
+    .notice:empty { display: none; }
+    label[for="email"] { display: block; font-size: 13px; margin: 0 0 6px; }
+    input[type="email"], input[type="text"] { width: 100%; border: 1px solid #c0a4d3; border-radius: 7px; padding: 12px; font: inherit; background: #211331; color: #fff; min-width: 0; }
+    input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid #e4beff; outline-offset: 2px; }
+    .form-row { display: flex; gap: 8px; margin-top: 10px; }
+    .form-row input { flex: 1; }
+    button { font: inherit; border: var(--main-border); border-radius: 7px; padding: 10px 12px; color: #fff; background: var(--1); box-shadow: var(--box-shadow); cursor: pointer; }
+    button:disabled { opacity: .55; cursor: wait; }
+    button.secondary { background: rgba(33,4,59,.8); }
+    button.danger { background: #532849; }
+    .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+    .toolbar small { font-size: 12px; color: #e5d4f0; overflow-wrap: anywhere; }
+    .progress-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .track { height: 10px; background: #221031; border: 1px solid #000; border-radius: 12px; overflow: hidden; }
+    .fill { height: 100%; background: var(--2); width: 0%; transition: width .25s; }
+    .tasks { display: grid; gap: 9px; margin-top: 14px; }
+    .task { display: flex; gap: 12px; align-items: center; background: var(--1); border: var(--main-border); border-radius: 8px; box-shadow: var(--box-shadow); padding: 12px; cursor: pointer; min-height: 49px; }
+    .task input { accent-color: var(--accent-color); width: 19px; height: 19px; margin: 0; flex: 0 0 19px; }
+    .task span { flex: 1; }
+    .task.done span { text-decoration: line-through; opacity: .73; }
+    .task.saving { opacity: .65; }
+    .footer { text-align: center; color: #f6ddff; font-size: 12px; }
+    .hidden { display: none !important; }
+    @media(max-width:420px) { .shell { width: calc(100% - 18px); margin-top: 12px; } .panel { padding: 13px; } .form-row { flex-direction: column; } }
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="panel">
+    <div class="eyebrow">☾ ✦ THE CELESTIAL COURT ✦ ☽</div>
+    <h1>Eclipse's Astral Quest Log</h1>
+    <p>One Soul • Infinite Forms • Eternal Reign</p>
+  </header>
+  <section class="panel" aria-live="polite">
+    <div id="status" class="status"><span class="status-dot"></span><span>Checking connection…</span></div>
+    <div id="notice" class="notice" role="status"></div>
+  </section>
+  <section class="panel" id="setup" hidden>
+    <h2>✦ Finish website setup ✦</h2>
+    <p>Cloud syncing needs a Supabase project. Open <strong>config.js</strong> and add the project URL and publishable/anon key, then follow <strong>README.md</strong>.</p>
+    <p class="hint">You can preview the appearance now, but changes will not save or sync until setup is complete.</p>
+    <button id="preview" type="button">Preview the checklist</button>
+  </section>
+  <section class="panel" id="auth" hidden>
+    <h2>✦ Enter the Kingdom ✦</h2>
+    <p class="hint">Sign in with the same email on your iPad and iPhone. We'll send you a login code or secure link, depending on your Supabase email template.</p>
+    <form id="emailForm">
+      <label for="email">Your email</label>
+      <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+      <div class="form-row"><button id="send" type="submit">Send sign-in email</button></div>
+    </form>
+    <form id="codeForm" hidden>
+      <label for="code">Email verification code (if your email contains one)</label>
+      <div class="form-row"><input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" /><button id="verify" type="submit">Verify code</button></div>
+    </form>
+  </section>
+  <section class="panel" id="app" hidden>
+    <div class="toolbar"><small id="identity"></small><button id="signout" class="secondary" type="button">Sign out</button></div>
+    <h2>✧ Daily Quests ✧</h2>
+    <div class="progress-head"><span>Completed quests</span><strong id="count">0 / 9</strong></div>
+    <div class="track" role="progressbar" aria-label="Completed quests" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0" id="progress"><div class="fill" id="fill"></div></div>
+    <div id="tasks" class="tasks"></div>
+    <div class="toolbar" style="margin-top:15px"><small>Saved to your private cloud checklist</small><button id="reset" class="danger" type="button">Reset all tasks</button></div>
+  </section>
+  <p class="footer">☾ The stars may change, but the sovereign remains ☽</p>
+</main>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  'use strict';
+  const TASKS = [
+    ['feed','Feed & Amuse Lions'],
+    ['spar','Spar with Submale'],
+    ['cubs','Check Cubs'],
+    ['brood','Broodmother Cubs'],
+    ['chase','Chase/Giveaway'],
+    ['train','Train Cubs'],
+    ['gorilla','Gorilla Enclave'],
+    ['snake','Snake/Event Quests'],
+    ['games','Do all games']
+  ];
+  const $ = id => document.getElementById(id);
+  const settings = window.ECLIPSE_CONFIG || {};
+  const configured = /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(settings.url || '') && !!settings.publishableKey && !settings.publishableKey.includes('PASTE_');
+  let api = null, user = null, values = new Map(), preview = false, busy = new Set(), sentEmail = '';
+  let authSerial = 0, refreshInFlight = false, lastWriteAt = 0;
+  function show(id, yes) { $(id).hidden = !yes; }
+  function note(message) { $('notice').textContent = message || ''; }
+  function status(message, mode='') { $('status').innerHTML = ''; const dot=document.createElement('span'); dot.className='status-dot '+mode; const t=document.createElement('span');t.textContent=message; $('status').append(dot,t); }
+  function setProgress() {
+    const done=TASKS.filter(([id])=>values.get(id)===true).length;
+    $('count').textContent=done+' / '+TASKS.length;
+    $('progress').setAttribute('aria-valuenow',String(done));
+    $('fill').style.width=(done/TASKS.length*100)+'%';
+  }
+  function render() {
+    $('tasks').replaceChildren();
+    for (const [id,label] of TASKS) {
+      const el=document.createElement('label'); el.className='task'+(values.get(id)?' done':'')+(busy.has(id)?' saving':'');
+      const input=document.createElement('input'); input.type='checkbox'; input.checked=!!values.get(id); input.disabled=busy.has(id)||preview;
+      const span=document.createElement('span');span.textContent=label;
+      if (!preview) input.addEventListener('change',()=>saveTask(id,input.checked));
+      el.append(input,span); $('tasks').append(el);
+    }
+    setProgress();
+  }
+  async function loadTasks(force=false) {
+    if (!api || !user || preview || refreshInFlight) return;
+    if (!force && Date.now()-lastWriteAt < 3500) return;
+    refreshInFlight=true;
+    const uid=user.id;
+    try {
+      const {data,error}=await api.from('quest_checks').select('task_id,completed').eq('user_id',uid);
+      if(error) throw error;
+      if(!user || user.id!==uid) return;
+      for (const [id] of TASKS) if (!busy.has(id)) values.set(id, false);
+      for (const row of data || []) if(!busy.has(row.task_id)) values.set(row.task_id,!!row.completed);
+      render();status('Cloud sync connected','online');
+    } catch(e) { status('Could not sync tasks','error');note('Loading failed: '+e.message); }
+    finally {refreshInFlight=false;}
+  }
+  async function saveTask(id,checked) {
+    if(!user || busy.has(id))return;
+    const before=values.get(id)||false; values.set(id,checked);busy.add(id); render(); status('Saving to cloud…');
+    lastWriteAt=Date.now();
+    try {
+      const {error}=await api.from('quest_checks').upsert({user_id:user.id,task_id:id,completed:checked,updated_at:new Date().toISOString()},{onConflict:'user_id,task_id'});
+      if(error)throw error;
+      status('Saved • syncs across devices','online');note('');
+    } catch(e) {values.set(id,before); status('Save failed','error');note('Could not save: '+e.message);}
+    finally {busy.delete(id);render();}
+  }
+  async function resetAll() {
+    if (!user || busy.size || !confirm('Uncheck all quests on both devices?')) return;
+    $('reset').disabled=true;status('Resetting…');
+    try {
+      const {error}=await api.from('quest_checks').delete().eq('user_id',user.id);
+      if(error)throw error;
+      values.clear();lastWriteAt=Date.now();render();status('All quests reset and saved','online');note('');
+    } catch(e) {status('Reset failed','error');note('Could not reset: '+e.message);}
+    finally {$('reset').disabled=false;}
+  }
+  async function showSession(session) {
+    const serial=++authSerial;
+    user=session?.user||null;preview=false;values.clear(); busy.clear();
+    show('setup',false);show('auth',!user);show('app',!!user);show('codeForm',false);
+    if(user){$('identity').textContent='Signed in: '+(user.email||'your account');status('Syncing quests…');note('');render();await loadTasks(true);if(serial!==authSerial)return;}
+    else {status('Sign in to sync your tasks'); note('');}
+  }
+  async function init() {
+    if(!configured) {
+      status('Cloud setup required','error');show('setup',true);note('');return;
+    }
+    if (!window.supabase?.createClient) {status('Could not load cloud library','error');note('Check your network connection and reload.');return;}
+    api=window.supabase.createClient(settings.url,settings.publishableKey);
+    api.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>showSession(session),0);});
+    try {const {data,error}=await api.auth.getSession();if(error)throw error;await showSession(data.session);} catch(e){status('Sign-in unavailable','error');note(e.message);}
+  }
+  $('preview').addEventListener('click',()=>{
+    preview=true;values=new Map([['spar',true]]);show('setup',false);show('auth',false);show('app',true);
+    $('identity').textContent='Preview only • not saved';$('reset').hidden=true;$('signout').textContent='Back to setup';
+    status('Preview mode — cloud syncing not configured','error');render();
+  });
+  $('signout').addEventListener('click',async()=>{
+    if(preview){location.reload();return;}
+    const {error}=await api.auth.signOut();if(error)note(error.message);else await showSession(null);
+  });
+  $('emailForm').addEventListener('submit',async e=>{
+    e.preventDefault();sentEmail=$('email').value.trim(); if(!sentEmail)return;
+    $('send').disabled=true;note('Sending sign-in email…');
+    try {
+      const {error}=await api.auth.signInWithOtp({email:sentEmail,options:{emailRedirectTo:location.origin+location.pathname}});
+      if(error)throw error;
+      show('codeForm',true);
+      note('Check your email for a sign-in link or code. If it is a link, open it in the browser where you want to use the checklist.');
+    } catch(e){note('Could not send email: '+e.message);} finally{$('send').disabled=false;}
+  });
+  $('codeForm').addEventListener('submit',async e=>{
+    e.preventDefault();const token=$('code').value.trim();if(!token)return;
+    $('verify').disabled=true;note('Verifying code…');
+    try {const {error}=await api.auth.verifyOtp({email:sentEmail,token,type:'email'});if(error)throw error;note('');}
+    catch(e){note('Could not verify: '+e.message);}finally{$('verify').disabled=false;}
+  });
+  $('reset').addEventListener('click',resetAll);
+  // Refresh from the cloud every 12 seconds, and immediately when switching back to the page.
+  setInterval(()=>{if(!document.hidden && user && !preview) loadTasks();},12000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden && user && !preview)loadTasks(true);});
+  init();
+})();
+</script>
+</body>
+</html>
